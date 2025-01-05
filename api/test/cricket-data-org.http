@@ -1,0 +1,5 @@
+### Get Player data
+GET https://api.cricapi.com/v1/players?apikey=38ab288a-a0b9-45cf-83c2-f56de109251d&offset=15393
+Content-Type: application/json
+
+
