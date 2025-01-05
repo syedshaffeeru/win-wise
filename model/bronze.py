@@ -97,3 +97,32 @@ class Match:
         :return: (dict) Dictionary representation of the Match object.
         """
         return asdict(self)
+
+
+@dataclass
+class Players:
+    player_id: str #Player ID
+    name: str #Player Name
+    country: str #Player Country
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Players":
+        """
+        Create an instance from a dictionary.
+
+        :param data: (dict) Dictionary containing match information.
+        :return: (Match) An instance of the Player class.
+        """
+        return cls(
+            player_id=data.get("id"),
+            name=data.get("name"),
+            country=data.get("country")
+        )
+
+    def to_dict(self) -> dict:
+        """
+        Convert the instance to a dictionary.
+
+        :return: (dict) Dictionary representation of the Match object.
+        """
+        return asdict(self)
