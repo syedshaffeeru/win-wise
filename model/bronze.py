@@ -1,4 +1,5 @@
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass,field
+from typing import List, Optional
 
 @dataclass
 class Series:
@@ -44,6 +45,40 @@ class Series:
         return asdict(self)
 
 
+@dataclass
+class Score:
+    """
+    Represents the score of a specific inning in a cricket match.
+    """
+    r: int  # Runs scored
+    w: int  # Wickets lost
+    o: float  # Overs played
+    inning: str  # Description of the inning (e.g., "Western Australia Inning 1")
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Score":
+        """
+        Create an instance of Score from a dictionary.
+
+        :param data: (dict) Dictionary containing score information.
+        :return: (Score) An instance of the Score class.
+        """
+        return cls(
+            r=data.get("r"),
+            w=data.get("w"),
+            o=data.get("o"),
+            inning=data.get("inning")
+        )
+    def to_dict(self) -> dict:
+        """
+        Convert the instance to a dictionary.
+
+        :return: (dict) Dictionary representation of the Score object.
+        """
+        return asdict(self) 
+
+
+
 
 @dataclass
 class Match:
@@ -51,24 +86,21 @@ class Match:
     Data model for cricket match details.
     """
     match_id: str  # Unique identifier for the match.
-    name: str  # Name of the match (e.g., "Pakistan A vs West Indies, 3-day Warm-up Match").
-    match_type: str  # Type of match (e.g., "test", "odi", "t20").
-    status: str  # Current status of the match (e.g., "Match not started").
-    venue: str  # Venue where the match is being played.
+    name: str  # Name of the match (e.g., "Western Australia vs New South Wales, Final").
+    status: str  # Current status or result of the match.
+    match_type: str  # Type of match (e.g., "odi", "t20", "test").
+    venue: str  # Venue where the match was played.
     date: str  # Date of the match.
-    datetime_gmt: str  # Match date and time in GMT.
-    teams: list  # List of teams playing in the match.
+    datetime_gmt: str  # Match date and time in GMT (ISO format).
+    teams: List[str]  # List of teams playing in the match.
+    score: Optional[List[Score]] = field(default_factory=list)  # Scores for the innings.
     series_id: str  # ID of the series to which this match belongs.
-    fantasy_enabled: bool  # Indicates if fantasy cricket is enabled for this match.
-    bbb_enabled: bool  # Indicates if ball-by-ball updates are enabled.
-    has_squad: bool  # Indicates if squads have been announced for the match.
-    match_started: bool  # Indicates if the match has started.
-    match_ended: bool  # Indicates if the match has ended.
+    fantasy_enabled: bool = False  # Indicates if fantasy cricket is enabled for this match.
 
     @classmethod
     def from_dict(cls, data: dict) -> "Match":
         """
-        Create an instance from a dictionary.
+        Create an instance of Match from a dictionary.
 
         :param data: (dict) Dictionary containing match information.
         :return: (Match) An instance of the Match class.
@@ -76,20 +108,17 @@ class Match:
         return cls(
             match_id=data.get("id"),
             name=data.get("name"),
-            match_type=data.get("matchType"),
             status=data.get("status"),
+            match_type=data.get("matchType"),
             venue=data.get("venue"),
             date=data.get("date"),
             datetime_gmt=data.get("dateTimeGMT"),
             teams=data.get("teams", []),
+            score=[Score.from_dict(score) for score in data.get("score", [])],
             series_id=data.get("series_id"),
-            fantasy_enabled=data.get("fantasyEnabled", False),
-            bbb_enabled=data.get("bbbEnabled", False),
-            has_squad=data.get("hasSquad", False),
-            match_started=data.get("matchStarted", False),
-            match_ended=data.get("matchEnded", False)
+            fantasy_enabled=data.get("fantasyEnabled", False)
         )
-
+    
     def to_dict(self) -> dict:
         """
         Convert the instance to a dictionary.
